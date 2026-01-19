@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Create Campaign | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('campaigns.list_campaigns') }}" style="color: var(--accent-green); text-decoration: none; margin-bottom: 1rem; display: inline-block;">
+            ← Back to Campaigns
+        </a>
+        <h1 class="glitch" data-text="CREATE CAMPAIGN" style="font-size: 2.5rem;">CREATE CAMPAIGN</h1>
+        <p style="color: var(--text-secondary);">Set up a new phishing campaign</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <!-- Form -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">📋 Campaign Details</h2>
+            
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.name.label }}
+                    {{ form.name(class="form-control", placeholder="e.g., Q4 Security Awareness Test") }}
+                    {% if form.name.errors %}
+                        {% for error in form.name.errors %}
+                            <span style="color: var(--accent-red); font-size: 0.85rem;">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.description.label }}
+                    {{ form.description(class="form-control", rows="3", placeholder="Campaign description and objectives...") }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.template_id.label }}
+                    {{ form.template_id(class="form-control") }}
+                    {% if form.template_id.errors %}
+                        {% for error in form.template_id.errors %}
+                            <span style="color: var(--accent-red); font-size: 0.85rem;">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <small style="color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                        Don't have templates? <a href="{{ url_for('email_gen.manual') }}" style="color: var(--accent-green);">Create one first</a>
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    {{ form.phishing_url.label }}
+                    {{ form.phishing_url(class="form-control", placeholder="https://phish.sentinelsec.nl/login") }}
+                    {% if form.phishing_url.errors %}
+                        {% for error in form.phishing_url.errors %}
+                            <span style="color: var(--accent-red); font-size: 0.85rem;">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <small style="color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                        This will replace [PHISHING_LINK] in your email template
+                    </small>
+                </div>
+                
+                {{ form.submit(class="btn btn-primary", style="width: 100%; padding: 1rem; margin-top: 1rem;") }}
+            </form>
+        </div>
+        
+        <!-- Info -->
+        <div>
+            <div class="card card-success" style="margin-bottom: 1.5rem;">
+                <h3 style="color: var(--accent-green); margin-bottom: 1rem;">✨ Next Steps</h3>
+                <ol style="color: var(--text-secondary); line-height: 1.8; font-size: 0.9rem;">
+                    <li>Create campaign</li>
+                    <li>Upload target list (CSV)</li>
+                    <li>Review & test</li>
+                    <li>Launch campaign</li>
+                    <li>Monitor results</li>
+                </ol>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">📝 CSV Format</h3>
+                <div style="background: rgba(10, 14, 39, 0.8); padding: 1rem; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 0.85rem;">
+                    email,first_name,last_name,company,job_title<br>
+                    john@example.com,John,Smith,TechCorp,IT Manager<br>
+                    jane@example.com,Jane,Doe,SecureCo,Developer
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1.5rem; background: rgba(255, 0, 85, 0.05);">
+                <h3 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ Important</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Ensure you have written authorization before launching any phishing campaign.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

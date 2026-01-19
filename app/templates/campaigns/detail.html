@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}{{ campaign.name }} | Campaign Details{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('campaigns.list_campaigns') }}" style="color: var(--accent-green); text-decoration: none; margin-bottom: 1rem; display: inline-block;">
+            ← Back to Campaigns
+        </a>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 class="glitch" data-text="{{ campaign.name.upper() }}" style="font-size: 2.5rem;">{{ campaign.name }}</h1>
+                <p style="color: var(--text-secondary);">{{ campaign.description or 'No description' }}</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                {% if campaign.status == 'draft' %}
+                <button onclick="launchCampaign()" class="btn btn-primary" style="padding: 1rem 2rem;">
+                    🚀 Launch Campaign
+                </button>
+                {% elif campaign.status == 'running' %}
+                <button class="btn btn-danger" style="padding: 1rem 2rem;">
+                    ⏸️ Pause Campaign
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="card card-success">
+            <h3 style="color: var(--accent-green); font-size: 0.9rem; margin-bottom: 0.5rem;">TARGETS</h3>
+            <p style="font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0;">{{ campaign.targets|length }}</p>
+        </div>
+        
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">SENT</h3>
+            <p style="font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; color: var(--accent-green);">{{ campaign.emails_sent }}</p>
+        </div>
+        
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">OPENED</h3>
+            <p style="font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; color: var(--accent-blue);">{{ campaign.emails_opened }}</p>
+        </div>
+        
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">CLICKED</h3>
+            <p style="font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; color: var(--accent-blue);">{{ campaign.links_clicked }}</p>
+        </div>
+        
+        <div class="card card-danger">
+            <h3 style="color: var(--accent-red); font-size: 0.9rem; margin-bottom: 0.5rem;">CAPTURED</h3>
+            <p style="font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0;">{{ campaign.credentials_captured }}</p>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="margin-bottom: 1.5rem;">🎯 Quick Actions</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="{{ url_for('campaigns.manage_targets', campaign_id=campaign.id) }}" 
+               class="btn btn-primary" 
+               style="text-decoration: none; text-align: center; padding: 1.5rem;">
+                👥 Manage Targets
+            </a>
+            <button class="btn btn-secondary" style="padding: 1.5rem;">
+                📧 Preview Email
+            </button>
+            <button class="btn btn-secondary" style="padding: 1.5rem;">
+                📊 View Analytics
+            </button>
+            <button class="btn btn-secondary" style="padding: 1.5rem;">
+                📥 Export Results
+            </button>
+        </div>
+    </div>
+    
+    <!-- Campaign Details -->
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">ℹ️ Campaign Information</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Status:</p>
+                <p style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 1.5rem;">
+                    <span class="badge {% if campaign.status == 'running' %}badge-success{% endif %}">
+                        {{ campaign.status.title() }}
+                    </span>
+                </p>
+                
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Template:</p>
+                <p style="color: var(--text-primary); margin-bottom: 1.5rem;">
+                    {% if campaign.template %}
+                    {{ campaign.template.name }}
+                    {% else %}
+                    No template selected
+                    {% endif %}
+                </p>
+                
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Phishing URL:</p>
+                <p style="color: var(--accent-green); font-family: monospace; font-size: 0.9rem;">
+                    {{ campaign.phishing_url or 'Not set' }}
+                </p>
+            </div>
+            
+            <div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Created:</p>
+                <p style="color: var(--text-primary); margin-bottom: 1.5rem;">
+                    {{ campaign.created_at.strftime('%Y-%m-%d %H:%M') }}
+                </p>
+                
+                {% if campaign.started_at %}
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Started:</p>
+                <p style="color: var(--text-primary); margin-bottom: 1.5rem;">
+                    {{ campaign.started_at.strftime('%Y-%m-%d %H:%M') }}
+                </p>
+                {% endif %}
+                
+                {% if campaign.completed_at %}
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Completed:</p>
+                <p style="color: var(--text-primary);">
+                    {{ campaign.completed_at.strftime('%Y-%m-%d %H:%M') }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function launchCampaign() {
+    if (!confirm('Launch this campaign? Emails will be sent to all targets.')) return;
+    
+    fetch('{{ url_for("campaigns.launch", campaign_id=campaign.id) }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(err => alert('Error: ' + err));
+}
+</script>
+{% endblock %}

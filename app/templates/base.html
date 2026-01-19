@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PhishLab Pro{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark-theme.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} flash-message" style="margin-bottom: 10px; animation: slideIn 0.3s ease;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            <script>
+                setTimeout(() => {
+                    document.querySelectorAll('.flash-message').forEach(msg => {
+                        msg.style.animation = 'slideOut 0.3s ease';
+                        setTimeout(() => msg.remove(), 300);
+                    });
+                }, 5000);
+            </script>
+            <style>
+                @keyframes slideIn {
+                    from { transform: translateX(400px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(400px); opacity: 0; }
+                }
+            </style>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="navbar" style="position: sticky; top: 0; z-index: 999;">
+        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <a href="{{ url_for('index') }}" class="nav-brand" style="text-decoration: none;">
+                    <h2 class="glitch" data-text="PHISHLAB PRO" style="color: var(--accent-green); margin: 0;">PHISHLAB PRO</h2>
+                </a>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{{ url_for('index') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('email_gen.generate') }}" class="nav-link">AI Generator</a>
+                    <a href="{{ url_for('campaigns.list_campaigns') }}" class="nav-link">Campaigns</a>
+                    <a href="{{ url_for('evilginx.dashboard') }}" class="nav-link">EvilGinx</a>
+                    {% if current_user.can_manage_users() %}
+                        <a href="{{ url_for('admin.users') }}" class="nav-link">Admin</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="color: var(--text-secondary); font-size: 0.9rem;">
+                    <span class="badge badge-success">{{ current_user.role.replace('_', ' ').title() }}</span>
+                    {{ current_user.username }}
+                    {% if current_user.group %}
+                        <span style="color: var(--text-muted);">| {{ current_user.group.name }}</span>
+                    {% endif %}
+                </span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Logout</a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main style="min-height: calc(100vh - 80px); padding: 2rem;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-color);">
+        <p>PhishLab Pro v1.0.0 | Educational & Research Purposes Only</p>
+        <p style="color: var(--accent-red); margin-top: 0.5rem;">⚠️ Unauthorized use is strictly prohibited</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | PhishLab Pro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark-theme.css') }}">
+    
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at 50% 50%, #151932 0%, #0a0e27 100%);
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--border-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .login-footer {
+            width: 100%;
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            background: rgba(10, 14, 39, 0.6);
+            z-index: 10;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <div class="login-container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 class="glitch" data-text="PHISHLAB PRO" style="font-size: 3rem; color: var(--accent-green); text-shadow: 0 0 20px var(--shadow-glow-green); margin-bottom: 0.5rem;">PHISHLAB PRO</h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">Advanced Phishing Platform</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, rgba(255, 0, 85, 0.2) 0%, rgba(0, 255, 65, 0.2) 100%); border: 2px solid var(--accent-red); border-radius: 8px; padding: 1rem; margin-bottom: 2rem; text-align: center;">
+            <h3 style="color: var(--accent-red); font-size: 1.2rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 2px;">⚠️ RESTRICTED ACCESS</h3>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Security Clearance Required</p>
+        </div>
+        
+        <div class="card">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(class="form-control", placeholder="Enter username") }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control", placeholder="Enter password") }}
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                    {{ form.remember_me() }}
+                    {{ form.remember_me.label(style="margin: 0; cursor: pointer; font-size: 0.9rem;") }}
+                </div>
+                
+                {{ form.submit(class="btn btn-primary", style="width: 100%; padding: 1rem; font-size: 1.1rem;") }}
+            </form>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
+            <p>First time setup? <a href="{{ url_for('auth.register') }}" style="color: var(--accent-green); text-decoration: none; font-weight: 600;">Create super admin account</a></p>
+        </div>
+    </div>
+
+    <footer class="login-footer">
+        <p><strong style="color: var(--accent-red);">EDUCATIONAL USE ONLY</strong> | Unauthorized access is illegal</p>
+        <p style="margin-top: 0.5rem;">PhishLab Pro v1.0.0 | For Research & Educational Purposes</p>
+    </footer>
+</body>
+</html>

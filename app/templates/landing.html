@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 4rem auto; text-align: center;">
+    <h1 class="glitch" data-text="PHISHLAB PRO" style="font-size: 4rem; margin-bottom: 1rem;">PHISHLAB PRO</h1>
+    <p style="color: var(--text-secondary); font-size: 1.2rem; margin-bottom: 3rem;">
+        AI-Powered Phishing Platform with MFA Bypass
+    </p>
+    
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <h2 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ RESTRICTED ACCESS</h2>
+        <p style="margin-bottom: 2rem;">
+            This platform is designed for authorized penetration testing,<br>
+            security research, and educational demonstrations only.
+        </p>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Sign In</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
+        </div>
+    </div>
+    
+    <div style="margin-top: 3rem; padding: 2rem; background: rgba(255, 0, 85, 0.1); border: 1px solid var(--accent-red); border-radius: 8px;">
+        <h3 style="color: var(--accent-red); margin-bottom: 1rem;">⚡ Features</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left;">
+            <div>
+                <strong style="color: var(--accent-green);">✓</strong> AI Email Generation<br>
+                <strong style="color: var(--accent-green);">✓</strong> Multi-Tenant RBAC<br>
+                <strong style="color: var(--accent-green);">✓</strong> Campaign Management
+            </div>
+            <div>
+                <strong style="color: var(--accent-green);">✓</strong> EvilGinx2 Integration<br>
+                <strong style="color: var(--accent-green);">✓</strong> Session Capture<br>
+                <strong style="color: var(--accent-green);">✓</strong> Real-Time Analytics
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

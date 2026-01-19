@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Register | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 4rem auto;">
+    <div class="card">
+        <h2 class="glitch" data-text="CREATE ACCOUNT" style="margin-bottom: 1.5rem;">CREATE ACCOUNT</h2>
+        
+        {% if is_first_user %}
+        <div class="alert alert-success">
+            <strong>First Time Setup</strong><br>
+            You are creating the super admin account.
+        </div>
+        {% endif %}
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                {{ form.username.label }}
+                {{ form.username(class="form-control", placeholder="Choose a username") }}
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <span style="color: var(--accent-red); font-size: 0.85rem;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control", placeholder="email@example.com") }}
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <span style="color: var(--accent-red); font-size: 0.85rem;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.password.label }}
+                {{ form.password(class="form-control", placeholder="Minimum 8 characters") }}
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <span style="color: var(--accent-red); font-size: 0.85rem;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.password2.label }}
+                {{ form.password2(class="form-control", placeholder="Re-enter password") }}
+                {% if form.password2.errors %}
+                    {% for error in form.password2.errors %}
+                        <span style="color: var(--accent-red); font-size: 0.85rem;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            {{ form.submit(class="btn btn-primary", style="width: 100%; padding: 1rem;") }}
+        </form>
+        
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{{ url_for('auth.login') }}" style="color: var(--accent-green); text-decoration: none;">
+                Already have an account? Sign in
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

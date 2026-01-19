@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Targets | {{ campaign.name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('campaigns.detail', campaign_id=campaign.id) }}" style="color: var(--accent-green); text-decoration: none; margin-bottom: 1rem; display: inline-block;">
+            ← Back to Campaign
+        </a>
+        <h1 class="glitch" data-text="MANAGE TARGETS" style="font-size: 2.5rem; margin-top: 0.5rem;">MANAGE TARGETS</h1>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">{{ campaign.name }}</p>
+    </div>
+    
+    <!-- Upload Section -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">📤 Upload Targets</h2>
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <div>
+                <input type="file" id="csvFile" accept=".csv" class="form-control" style="margin-bottom: 1rem;">
+                <button onclick="uploadCSV()" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                    Upload CSV
+                </button>
+            </div>
+            
+            <div style="background: rgba(10, 14, 39, 0.6); padding: 1.5rem; border-radius: 6px;">
+                <h4 style="color: var(--accent-blue); margin-bottom: 0.5rem;">CSV Format:</h4>
+                <pre style="color: var(--text-secondary); font-size: 0.8rem; margin: 0; overflow-x: auto;">email,first_name,last_name,company,job_title
+john@corp.com,John,Smith,TechCorp,Manager</pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Targets List -->
+    {% if campaign.targets %}
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">👥 Targets ({{ campaign.targets|length }})</h2>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 1rem; text-align: left; color: var(--accent-green); width: 20%;">Email</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--accent-green); width: 15%;">Name</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--accent-green); width: 15%;">Company</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--accent-green); width: 15%;">Status</th>
+                        <th style="padding: 1rem; text-align: center; color: var(--accent-green); width: 10%;">Sent</th>
+                        <th style="padding: 1rem; text-align: center; color: var(--accent-green); width: 10%;">Opened</th>
+                        <th style="padding: 1rem; text-align: center; color: var(--accent-green); width: 10%;">Clicked</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for target in campaign.targets %}
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 1rem; font-family: monospace; color: var(--text-primary); width: 20%;">{{ target.email }}</td>
+                        <td style="padding: 1rem; color: var(--text-primary); width: 15%;">{{ target.first_name }} {{ target.last_name }}</td>
+                        <td style="padding: 1rem; color: var(--text-secondary); width: 15%;">{{ target.company or '-' }}</td>
+                        <td style="padding: 1rem; width: 15%;">
+                            {% if target.credentials_submitted %}
+                            <span class="badge badge-danger">Compromised</span>
+                            {% elif target.link_clicked %}
+                            <span class="badge" style="background: #ffa500;">Clicked</span>
+                            {% elif target.email_opened %}
+                            <span class="badge badge-success">Opened</span>
+                            {% elif target.email_sent %}
+                            <span class="badge" style="background: var(--accent-blue);">Sent</span>
+                            {% else %}
+                            <span class="badge" style="background: var(--bg-tertiary);">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem; text-align: center; width: 10%;">
+                            {% if target.email_sent %}✅{% else %}⏳{% endif %}
+                        </td>
+                        <td style="padding: 1rem; text-align: center; width: 10%;">
+                            {% if target.email_opened %}✅{% else %}⏳{% endif %}
+                        </td>
+                        <td style="padding: 1rem; text-align: center; width: 10%;">
+                            {% if target.link_clicked %}✅{% else %}⏳{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <h2 style="color: var(--text-secondary); margin-bottom: 1rem;">No Targets Yet</h2>
+        <p style="color: var(--text-muted);">Upload a CSV file to add targets</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function uploadCSV() {
+    const fileInput = document.getElementById('csvFile');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a CSV file');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    fetch('{{ url_for("campaigns.upload_targets", campaign_id=campaign.id) }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(err => alert('Error: ' + err));
+}
+</script>
+{% endblock %}

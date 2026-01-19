@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}EvilGinx2 Dashboard | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <h1 class="glitch" data-text="EVILGINX2 DASHBOARD" style="font-size: 2.5rem;">EVILGINX2 DASHBOARD</h1>
+        <p style="color: var(--text-secondary);">MFA Bypass & Session Hijacking Platform</p>
+    </div>
+    
+    <!-- Stats -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+        <div class="card card-success">
+            <h3 style="color: var(--accent-green); margin-bottom: 0.5rem;">Available Phishlets</h3>
+            <p style="font-size: 3rem; font-weight: 700; margin: 1rem 0;">{{ phishlets|length }}</p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Ready to deploy</p>
+        </div>
+        
+        <div class="card card-danger">
+            <h3 style="color: var(--accent-red); margin-bottom: 0.5rem;">Active Sessions</h3>
+            <p style="font-size: 3rem; font-weight: 700; margin: 1rem 0;">{{ sessions|length }}</p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Captured sessions</p>
+        </div>
+        
+        <div class="card">
+            <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">Success Rate</h3>
+            <p style="font-size: 3rem; font-weight: 700; margin: 1rem 0;">0%</p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">No data yet</p>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="margin-bottom: 1.5rem;">🚀 Quick Actions</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="{{ url_for('evilginx.phishlets') }}" class="btn btn-primary" style="text-decoration: none; text-align: center; padding: 1.5rem;">
+                🎭 Manage Phishlets
+            </a>
+            <a href="{{ url_for('evilginx.sessions') }}" class="btn btn-danger" style="text-decoration: none; text-align: center; padding: 1.5rem;">
+                📊 View Sessions
+            </a>
+            <button class="btn btn-secondary" style="padding: 1.5rem;">
+                ⚙️ Server Settings
+            </button>
+        </div>
+    </div>
+    
+    <!-- Available Phishlets Preview -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>🎭 Available Phishlets</h2>
+            <a href="{{ url_for('evilginx.phishlets') }}" style="color: var(--accent-green); text-decoration: none;">
+                View All →
+            </a>
+        </div>
+        
+        {% if phishlets %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+            {% for phishlet in phishlets[:6] %}
+            <a href="{{ url_for('evilginx.phishlet_detail', name=phishlet.name) }}" 
+               class="card" 
+               style="text-decoration: none; padding: 1.5rem; text-align: center; transition: all 0.3s ease;">
+                <h3 style="color: var(--accent-green); margin-bottom: 0.5rem; font-size: 1.1rem;">
+                    {{ phishlet.name }}
+                </h3>
+                <span class="badge badge-success">Available</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+            No phishlets found. Make sure EvilGinx2 is installed correctly.
+        </p>
+        {% endif %}
+    </div>
+    
+    <!-- Warning -->
+    <div class="card" style="margin-top: 2rem; background: rgba(255, 0, 85, 0.05);">
+        <h3 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ Legal Notice</h3>
+        <p style="color: var(--text-secondary);">
+            EvilGinx2 is a powerful MFA bypass tool. Only use with explicit written authorization.
+            Unauthorized use is illegal and may result in criminal charges.
+        </p>
+    </div>
+</div>
+{% endblock %}

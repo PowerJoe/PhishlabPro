@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Campaigns | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 class="glitch" data-text="CAMPAIGNS" style="font-size: 2.5rem;">CAMPAIGNS</h1>
+            <p style="color: var(--text-secondary);">Manage your phishing campaigns</p>
+        </div>
+        <a href="{{ url_for('campaigns.create') }}" class="btn btn-primary" style="padding: 1rem 1.5rem;">
+            ➕ Create Campaign
+        </a>
+    </div>
+    
+    {% if campaigns %}
+    <div style="display: grid; gap: 1.5rem;">
+        {% for campaign in campaigns %}
+        <div class="card">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem;">
+                <!-- Campaign Info -->
+                <div>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                        <h2 style="color: var(--accent-green); margin: 0;">{{ campaign.name }}</h2>
+                        {% if campaign.status == 'draft' %}
+                        <span class="badge" style="background: var(--bg-tertiary);">Draft</span>
+                        {% elif campaign.status == 'running' %}
+                        <span class="badge badge-success">Running</span>
+                        {% elif campaign.status == 'completed' %}
+                        <span class="badge" style="background: var(--accent-blue);">Completed</span>
+                        {% elif campaign.status == 'paused' %}
+                        <span class="badge" style="background: #ffa500;">Paused</span>
+                        {% endif %}
+                    </div>
+                    
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        {{ campaign.description or 'No description' }}
+                    </p>
+                    
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">
+                        <p>Created: {{ campaign.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        {% if campaign.template %}
+                        <p>Template: <span style="color: var(--accent-green);">{{ campaign.template.name }}</span></p>
+                        {% endif %}
+                        <p>Targets: {{ campaign.targets|length }}</p>
+                    </div>
+                </div>
+                
+                <!-- Stats -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="text-align: center; padding: 1rem; background: rgba(10, 14, 39, 0.6); border-radius: 6px;">
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.25rem;">SENT</p>
+                        <p style="color: var(--accent-green); font-size: 1.5rem; font-weight: 700; margin: 0;">{{ campaign.emails_sent }}</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: rgba(10, 14, 39, 0.6); border-radius: 6px;">
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.25rem;">OPENED</p>
+                        <p style="color: var(--accent-blue); font-size: 1.5rem; font-weight: 700; margin: 0;">{{ campaign.emails_opened }}</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: rgba(10, 14, 39, 0.6); border-radius: 6px;">
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.25rem;">CLICKED</p>
+                        <p style="color: var(--accent-blue); font-size: 1.5rem; font-weight: 700; margin: 0;">{{ campaign.links_clicked }}</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: rgba(10, 14, 39, 0.6); border-radius: 6px;">
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.25rem;">CAPTURED</p>
+                        <p style="color: var(--accent-red); font-size: 1.5rem; font-weight: 700; margin: 0;">{{ campaign.credentials_captured }}</p>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; justify-content: center;">
+                    <a href="{{ url_for('campaigns.detail', campaign_id=campaign.id) }}" 
+                       class="btn btn-primary" 
+                       style="text-decoration: none; text-align: center; padding: 0.75rem;">
+                        📊 View Details
+                    </a>
+                    
+                    {% if campaign.status == 'draft' %}
+                    <button class="btn btn-success" style="padding: 0.75rem; background: var(--accent-green); color: var(--bg-primary);">
+                        🚀 Launch
+                    </button>
+                    {% elif campaign.status == 'running' %}
+                    <button class="btn btn-danger" style="padding: 0.75rem;">
+                        ⏸️ Pause
+                    </button>
+                    {% endif %}
+                    
+                    <button class="btn btn-secondary" style="padding: 0.75rem;">
+                        📝 Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <h2 style="color: var(--text-secondary); margin-bottom: 1rem;">No Campaigns Yet</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Create your first phishing campaign</p>
+        <a href="{{ url_for('campaigns.create') }}" class="btn btn-primary">
+            ➕ Create Campaign
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

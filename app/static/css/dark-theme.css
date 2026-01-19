@@ -1,0 +1,294 @@
+/* ===================================
+   PhishLab Pro - Dark Theme
+   =================================== */
+
+:root {
+    --bg-primary: #0a0e27;
+    --bg-secondary: #151932;
+    --bg-tertiary: #1e2749;
+    --accent-green: #00ff41;
+    --accent-red: #ff0055;
+    --accent-blue: #00d9ff;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --text-muted: #606060;
+    --border-color: #1e2749;
+    --shadow-glow-green: rgba(0, 255, 65, 0.3);
+    --shadow-glow-red: rgba(255, 0, 85, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.3;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
+.glitch {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--accent-red);
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--accent-blue);
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(30px, 9999px, 140px, 0); }
+    100% { clip: rect(60px, 9999px, 50px, 0); }
+}
+
+@keyframes glitch-anim-2 {
+    0% { clip: rect(65px, 9999px, 119px, 0); }
+    100% { clip: rect(50px, 9999px, 30px, 0); }
+}
+
+.card {
+    background: rgba(30, 39, 73, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 255, 65, 0.05);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 12px 40px rgba(0, 255, 65, 0.15);
+    transform: translateY(-2px);
+    border-color: var(--accent-green);
+}
+
+.card-success {
+    border-color: var(--accent-green);
+    box-shadow: 0 8px 32px var(--shadow-glow-green);
+}
+
+.card-danger {
+    border-color: var(--accent-red);
+    box-shadow: 0 8px 32px var(--shadow-glow-red);
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-green) 0%, #00cc33 100%);
+    color: var(--bg-primary);
+    box-shadow: 0 0 20px var(--shadow-glow-green);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 30px var(--shadow-glow-green);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--accent-red) 0%, #cc0044 100%);
+    color: white;
+    box-shadow: 0 0 20px var(--shadow-glow-red);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 0 30px var(--shadow-glow-red);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--accent-green);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(10, 14, 39, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 15px var(--shadow-glow-green);
+}
+
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    background: rgba(0, 255, 65, 0.1);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.alert-danger {
+    background: rgba(255, 0, 85, 0.1);
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.alert-warning {
+    background: rgba(255, 165, 0, 0.1);
+    border-color: #ffa500;
+    color: #ffa500;
+}
+
+.alert-info {
+    background: rgba(0, 217, 255, 0.1);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.navbar {
+    background: rgba(15, 19, 35, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: var(--accent-green);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-success {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.badge-danger {
+    background: var(--accent-red);
+    color: white;
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 255, 65, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--accent-green);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.text-center { text-align: center; }
+.text-success { color: var(--accent-green); }
+.text-danger { color: var(--accent-red); }
+.text-muted { color: var(--text-muted); }

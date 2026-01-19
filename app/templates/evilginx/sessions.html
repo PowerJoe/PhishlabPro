@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Captured Sessions | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <h1 class="glitch" data-text="CAPTURED SESSIONS" style="font-size: 2.5rem;">CAPTURED SESSIONS</h1>
+        <p style="color: var(--text-secondary);">View hijacked sessions and credentials</p>
+    </div>
+    
+    {% if sessions %}
+    <div class="card">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border-color);">
+                    <th style="padding: 1rem; text-align: left; color: var(--accent-green);">ID</th>
+                    <th style="padding: 1rem; text-align: left; color: var(--accent-green);">Phishlet</th>
+                    <th style="padding: 1rem; text-align: left; color: var(--accent-green);">Username</th>
+                    <th style="padding: 1rem; text-align: left; color: var(--accent-green);">IP Address</th>
+                    <th style="padding: 1rem; text-align: left; color: var(--accent-green);">Captured At</th>
+                    <th style="padding: 1rem; text-align: left; color: var(--accent-green);">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in sessions %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem;">{{ session.id }}</td>
+                    <td style="padding: 1rem;">{{ session.phishlet }}</td>
+                    <td style="padding: 1rem;">{{ session.username }}</td>
+                    <td style="padding: 1rem;">{{ session.ip_address }}</td>
+                    <td style="padding: 1rem;">{{ session.created_at }}</td>
+                    <td style="padding: 1rem;">
+                        <a href="{{ url_for('evilginx.session_detail', session_id=session.id) }}" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <h2 style="color: var(--text-secondary); margin-bottom: 1rem;">No Sessions Captured Yet</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">
+            Deploy a phishlet and launch a campaign to capture sessions
+        </p>
+        <a href="{{ url_for('evilginx.phishlets') }}" class="btn btn-primary">
+            View Phishlets
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

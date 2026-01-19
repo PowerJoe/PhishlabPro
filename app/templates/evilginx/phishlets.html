@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Phishlets | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 class="glitch" data-text="PHISHLETS" style="font-size: 2.5rem;">PHISHLETS</h1>
+            <p style="color: var(--text-secondary);">Manage EvilGinx2 phishing templates</p>
+        </div>
+        <button onclick="updatePhishlets()" class="btn btn-primary" style="padding: 1rem 1.5rem;">
+            🔄 Update Phishlets
+        </button>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <input 
+            type="text" 
+            id="searchInput" 
+            class="form-control" 
+            placeholder="🔍 Search phishlets (e.g., microsoft, google, github)..."
+            style="font-size: 1.1rem;"
+            onkeyup="filterPhishlets()">
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+            Found: <span id="resultCount">{{ phishlets|length }}</span> phishlets
+        </p>
+    </div>
+    
+    {% if phishlets %}
+    <div id="phishletsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for phishlet in phishlets %}
+        <div class="phishlet-card card" data-name="{{ phishlet.name.lower() }}">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                <h3 style="color: var(--accent-green); margin: 0; text-transform: capitalize;">
+                    {{ phishlet.name }}
+                </h3>
+                {% if phishlet.enabled %}
+                <span class="badge badge-success">Enabled</span>
+                {% else %}
+                <span class="badge" style="background: var(--bg-tertiary);">Disabled</span>
+                {% endif %}
+            </div>
+            
+            <div style="padding: 1rem; background: rgba(10, 14, 39, 0.6); border-radius: 6px; margin-bottom: 1rem;">
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem;">Filename:</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; font-family: monospace;">{{ phishlet.filename }}</p>
+            </div>
+            
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{{ url_for('evilginx.phishlet_detail', name=phishlet.name) }}" 
+                   class="btn btn-primary" 
+                   style="flex: 1; text-decoration: none; text-align: center; padding: 0.75rem;">
+                    View Details
+                </a>
+                {% if phishlet.enabled %}
+                <button class="btn btn-danger" style="padding: 0.75rem;" onclick="disablePhishlet('{{ phishlet.name }}')">
+                    Disable
+                </button>
+                {% else %}
+                <button class="btn btn-success" style="padding: 0.75rem; background: var(--accent-green); color: var(--bg-primary);" onclick="enablePhishlet('{{ phishlet.name }}')">
+                    Enable
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <h2 style="color: var(--text-secondary); margin-bottom: 1rem;">No Phishlets Found</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Click "Update Phishlets" to download the latest templates</p>
+        <button onclick="updatePhishlets()" class="btn btn-primary">
+            🔄 Update Phishlets
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function filterPhishlets() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.phishlet-card');
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+        const name = card.getAttribute('data-name');
+        if (name.includes(searchInput)) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('resultCount').textContent = visibleCount;
+}
+
+function enablePhishlet(name) {
+    const hostname = prompt(`Enter hostname for ${name}:`, 'phish.sentinelsec.nl');
+    if (!hostname) return;
+    
+    fetch('{{ url_for("evilginx.api_enable_phishlet") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: name, hostname: hostname})
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert(data.message || 'Enabled successfully');
+        location.reload();
+    })
+    .catch(err => alert('Error: ' + err));
+}
+
+function disablePhishlet(name) {
+    if (!confirm(`Disable ${name}?`)) return;
+    
+    fetch('{{ url_for("evilginx.api_disable_phishlet") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: name})
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert(data.message || 'Disabled successfully');
+        location.reload();
+    })
+    .catch(err => alert('Error: ' + err));
+}
+
+function updatePhishlets() {
+    if (!confirm('This will update phishlets from GitHub. Continue?')) return;
+    
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = '🔄 Updating...';
+    
+    fetch('{{ url_for("evilginx.api_update_phishlets") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Updated successfully! ${data.count} phishlets available.`);
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+            btn.disabled = false;
+            btn.textContent = '🔄 Update Phishlets';
+        }
+    })
+    .catch(err => {
+        alert('Error: ' + err);
+        btn.disabled = false;
+        btn.textContent = '🔄 Update Phishlets';
+    });
+}
+</script>
+{% endblock %}

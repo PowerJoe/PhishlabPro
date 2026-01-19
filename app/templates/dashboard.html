@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | PhishLab Pro{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <h1 class="glitch" data-text="DASHBOARD" style="font-size: 2.5rem;">DASHBOARD</h1>
+        <p style="color: var(--text-secondary);">
+            Welcome back, <strong style="color: var(--accent-green);">{{ current_user.username }}</strong>
+            {% if current_user.group %}
+            | Group: <strong>{{ current_user.group.name }}</strong>
+            {% endif %}
+        </p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+        <div class="card card-success">
+            <h3 style="color: var(--accent-green); margin-bottom: 0.5rem;">Active Campaigns</h3>
+            <p style="font-size: 3rem; font-weight: 700; margin: 1rem 0;">0</p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">No campaigns yet</p>
+        </div>
+        
+        <div class="card card-danger">
+            <h3 style="color: var(--accent-red); margin-bottom: 0.5rem;">Sessions Captured</h3>
+            <p style="font-size: 3rem; font-weight: 700; margin: 1rem 0;">0</p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">No captures yet</p>
+        </div>
+        
+        <div class="card">
+            <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">Success Rate</h3>
+            <p style="font-size: 3rem; font-weight: 700; margin: 1rem 0;">0%</p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">No data yet</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">🚀 Quick Actions</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="{{ url_for('email_gen.generate') }}" class="btn btn-primary" style="text-decoration: none; display: block; text-align: center; padding: 1.5rem;">
+                🤖 AI Email Generator
+            </a>
+            <a href="{{ url_for('campaigns.list_campaigns') }}" class="btn btn-primary" style="text-decoration: none; display: block; text-align: center; padding: 1.5rem;">
+                📧 Campaigns
+            </a>
+            <a href="{{ url_for('evilginx.dashboard') }}" class="btn btn-danger" style="text-decoration: none; display: block; text-align: center; padding: 1.5rem;">
+                🎭 EvilGinx Dashboard
+            </a>
+            {% if current_user.can_manage_users() %}
+            <a href="{{ url_for('admin.users') }}" class="btn btn-secondary" style="text-decoration: none; display: block; text-align: center; padding: 1.5rem;">
+                👥 Manage Users
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card" style="margin-top: 2rem; background: rgba(255, 0, 85, 0.05);">
+        <h3 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ Security Notice</h3>
+        <p style="color: var(--text-secondary);">
+            This platform is for <strong>authorized use only</strong>. All actions are logged and monitored.
+            Ensure you have proper authorization before conducting any security testing.
+        </p>
+    </div>
+</div>
+{% endblock %}

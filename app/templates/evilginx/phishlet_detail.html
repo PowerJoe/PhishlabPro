@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{{ name }} | Phishlet Details{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('evilginx.phishlets') }}" style="color: var(--accent-green); text-decoration: none; margin-bottom: 1rem; display: inline-block;">
+            ← Back to Phishlets
+        </a>
+        <h1 class="glitch" data-text="{{ name.upper() }}" style="font-size: 2.5rem; text-transform: uppercase;">{{ name.upper() }}</h1>
+        <p style="color: var(--text-secondary);">Phishlet Configuration Details</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <!-- Main Details -->
+        <div>
+            {% if config %}
+            <!-- Basic Info -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">📋 Basic Information</h2>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Name:</p>
+                        <p style="color: var(--text-primary); font-size: 1.1rem; font-weight: 600;">{{ config.name or name }}</p>
+                    </div>
+                    
+                    {% if config.author %}
+                    <div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Author:</p>
+                        <p style="color: var(--text-primary);">{{ config.author }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if config.min_version %}
+                    <div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Minimum EvilGinx Version:</p>
+                        <p style="color: var(--text-primary);">{{ config.min_version }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Proxy Hosts -->
+            {% if config.proxy_hosts %}
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">🌐 Proxy Hosts</h2>
+                <div style="background: rgba(10, 14, 39, 0.8); padding: 1.5rem; border-radius: 6px; font-family: 'Courier New', monospace;">
+                    {% for host in config.proxy_hosts %}
+                    <div style="margin-bottom: 0.5rem; color: var(--text-primary);">
+                        <strong style="color: var(--accent-green);">{{ host.phish_sub or 'root' }}</strong> → {{ host.orig_sub or 'root' }}.{{ host.domain }}
+                        {% if host.is_landing %}
+                        <span class="badge badge-success" style="margin-left: 0.5rem; font-size: 0.7rem;">Landing Page</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Auth URLs -->
+            {% if config.auth_urls %}
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">🔐 Authentication URLs</h2>
+                <div style="background: rgba(10, 14, 39, 0.8); padding: 1.5rem; border-radius: 6px; font-family: 'Courier New', monospace;">
+                    {% for url in config.auth_urls %}
+                    <div style="margin-bottom: 0.5rem; color: var(--accent-blue);">{{ url }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Sub Filters -->
+            {% if config.sub_filters %}
+            <div class="card">
+                <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">🔧 Sub Filters</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Number of filters: {{ config.sub_filters|length }}</p>
+                <div style="background: rgba(10, 14, 39, 0.8); padding: 1rem; border-radius: 6px;">
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">
+                        This phishlet uses {{ config.sub_filters|length }} substitution filters to modify responses.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <h2 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ Unable to Parse Configuration</h2>
+                <p style="color: var(--text-secondary);">The phishlet file may be corrupted or invalid.</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Actions Sidebar -->
+        <div>
+            <div class="card card-success" style="margin-bottom: 1.5rem;">
+                <h3 style="color: var(--accent-green); margin-bottom: 1.5rem;">🚀 Actions</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button class="btn btn-primary" style="width: 100%; padding: 1rem;" onclick="enablePhishlet()">
+                        ✅ Enable Phishlet
+                    </button>
+                    <button class="btn btn-secondary" style="width: 100%; padding: 1rem;">
+                        📝 Edit Configuration
+                    </button>
+                    <a href="{{ url_for('evilginx.phishlets') }}" class="btn btn-secondary" style="width: 100%; padding: 1rem; text-decoration: none; text-align: center;">
+                        ← Back to List
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">💡 Quick Setup</h3>
+                <ol style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8;">
+                    <li>Configure your domain</li>
+                    <li>Enable the phishlet</li>
+                    <li>Set up SSL certificates</li>
+                    <li>Create a lure</li>
+                    <li>Start capturing!</li>
+                </ol>
+            </div>
+            
+            <div class="card" style="margin-top: 1.5rem; background: rgba(255, 0, 85, 0.05);">
+                <h3 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ Important</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                    Ensure you have proper authorization before deploying this phishlet. 
+                    Unauthorized use is illegal.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function enablePhishlet() {
+    const hostname = prompt('Enter hostname for {{ name }}:', 'phish.sentinelsec.nl');
+    if (!hostname) return;
+    
+    fetch('{{ url_for("evilginx.api_enable_phishlet") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: '{{ name }}', hostname: hostname})
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert(data.message || 'Enabled successfully');
+        window.location.href = '{{ url_for("evilginx.phishlets") }}';
+    })
+    .catch(err => alert('Error: ' + err));
+}
+</script>
+{% endblock %}
