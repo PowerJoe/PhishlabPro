@@ -1,0 +1,185 @@
+"""
+EvilGinx2 Controller - Python wrapper for EvilGinx2
+"""
+
+import os
+import subprocess
+import json
+import time
+from datetime import datetime
+
+class EvilGinxController:
+    """Control EvilGinx2 from Python"""
+    
+    def __init__(self, evilginx_path=None, phishlets_path=None):
+        self.evilginx_path = evilginx_path or os.path.expanduser("~/evilginx2/bin/evilginx")
+        self.phishlets_path = phishlets_path or os.path.expanduser("~/evilginx2/phishlets")
+        self.process = None
+        
+    def get_available_phishlets(self):
+        """Get list of available phishlets"""
+        phishlets = []
+        
+        if not os.path.exists(self.phishlets_path):
+            return phishlets
+        
+        for filename in os.listdir(self.phishlets_path):
+            if filename.endswith('.yaml'):
+                name = filename.replace('.yaml', '')
+                phishlets.append({
+                    'name': name,
+                    'filename': filename,
+                    'path': os.path.join(self.phishlets_path, filename),
+                    'enabled': False  # TODO: Check actual status
+                })
+        
+        return sorted(phishlets, key=lambda x: x['name'])
+    
+    def parse_phishlet_config(self, phishlet_name):
+        """Parse phishlet YAML configuration"""
+        import yaml
+        
+        phishlet_path = os.path.join(self.phishlets_path, f"{phishlet_name}.yaml")
+        
+        if not os.path.exists(phishlet_path):
+            return None
+        
+        try:
+            with open(phishlet_path, 'r') as f:
+                config = yaml.safe_load(f)
+            
+            return {
+                'name': config.get('name'),
+                'author': config.get('author'),
+                'min_version': config.get('min_ver'),
+                'proxy_hosts': config.get('proxy_hosts', []),
+                'sub_filters': config.get('sub_filters', []),
+                'auth_urls': config.get('auth_urls', []),
+            }
+        except Exception as e:
+            print(f"Error parsing phishlet: {e}")
+            return None
+    
+    def enable_phishlet(self, phishlet_name, hostname):
+        """Enable a phishlet"""
+        # This would execute: phishlets enable <name>
+        # For now, we'll return success
+        return True
+    
+    def disable_phishlet(self, phishlet_name):
+        """Disable a phishlet"""
+        # This would execute: phishlets disable <name>
+        return True
+    
+    def set_hostname(self, phishlet_name, hostname):
+        """Set hostname for phishlet"""
+        # This would execute: phishlets hostname <name> <hostname>
+        return True
+    
+    def get_lures(self):
+        """Get list of active lures"""
+        # This would return active lures
+        return []
+    
+    def create_lure(self, phishlet_name, redirect_url):
+        """Create a new lure"""
+        # This would execute: lures create <phishlet> 
+        # and lures edit <id> redirect_url <url>
+        return {
+            'id': 1,
+            'phishlet': phishlet_name,
+            'path': f'/{phishlet_name}',
+            'redirect_url': redirect_url,
+            'created_at': datetime.utcnow()
+        }
+    
+    def get_sessions(self):
+        """Get captured sessions"""
+        # This would return sessions from EvilGinx2
+        # For now, return empty list
+        return []
+    
+    def get_session_details(self, session_id):
+        """Get details for a specific session"""
+        return None
+
+# Singleton instance
+_controller = None
+
+def get_evilginx_controller():
+    """Get or create EvilGinx controller instance"""
+    global _controller
+    if _controller is None:
+        _controller = EvilGinxController()
+    return _controller
+
+    def configure_for_local(self):
+        """Configure EvilGinx for local development"""
+        commands = [
+            "config domain localhost",
+            "config ip 127.0.0.1"
+        ]
+        
+        for cmd in commands:
+            result = self.execute_command(cmd)
+            if not result['success']:
+                return False
+        
+        return True
+    
+    def enable_phishlet_local(self, phishlet_name):
+        """Enable phishlet for local testing"""
+        hostname = f"{phishlet_name}.localhost"
+        
+        commands = [
+            f"phishlets hostname {phishlet_name} {hostname}",
+            f"phishlets enable {phishlet_name}"
+        ]
+        
+        for cmd in commands:
+            result = self.execute_command(cmd)
+            if not result['success']:
+                print(f"Failed command: {cmd}")
+                return False
+        
+        return True
+    
+    def create_lure(self, phishlet_name, redirect_url="https://www.google.com"):
+        """Create phishing lure URL"""
+        result = self.execute_command(f"lures create {phishlet_name}")
+        
+        if result['success']:
+            # Get the lure URL
+            url_result = self.execute_command("lures get-url 0")
+            return url_result.get('output', '')
+        
+        return None
+
+    def execute_command(self, command):
+        """Execute EvilGinx2 command (placeholder for now)"""
+        print(f"[EvilGinx Command] {command}")
+        return {'success': True, 'output': f'Command: {command}', 'error': None}
+    
+    def enable_phishlet(self, phishlet_name, hostname):
+        """Enable a phishlet with hostname"""
+        try:
+            if 'localhost' in hostname:
+                self.execute_command("config domain localhost")
+                self.execute_command("config ip 127.0.0.1")
+            
+            self.execute_command(f"phishlets hostname {phishlet_name} {hostname}")
+            self.execute_command(f"phishlets enable {phishlet_name}")
+            
+            print(f"✅ PhishLab Pro: Enabled {phishlet_name} on {hostname}")
+            return True
+        except Exception as e:
+            print(f"❌ Error: {e}")
+            return False
+    
+    def create_lure(self, phishlet_name, redirect_url="https://www.google.com"):
+        """Create lure URL"""
+        try:
+            self.execute_command(f"lures create {phishlet_name}")
+            return f"http://{phishlet_name}.localhost:443"
+        except:
+            return None

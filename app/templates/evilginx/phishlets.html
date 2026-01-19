@@ -98,20 +98,35 @@ function filterPhishlets() {
 }
 
 function enablePhishlet(name) {
-    const hostname = prompt(`Enter hostname for ${name}:`, 'phish.sentinelsec.nl');
+    // Auto-suggest localhost hostname
+    const hostname = prompt(
+        `Enter hostname for ${name}:`,
+        `${name}.localhost`  // Default to .localhost
+    );
+    
     if (!hostname) return;
     
-    fetch('{{ url_for("evilginx.api_enable_phishlet") }}', {
+    fetch('/evilginx/api/phishlet/enable', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({name: name, hostname: hostname})
     })
     .then(r => r.json())
     .then(data => {
-        alert(data.message || 'Enabled successfully');
-        location.reload();
+        if (data.success) {
+            let message = '✅ ' + data.message;
+            if (data.lure_url) {
+                message += '\n\n🔗 Phishing URL:\n' + data.lure_url;
+            }
+            alert(message);
+            location.reload();
+        } else {
+            alert('❌ Error: ' + data.error);
+        }
     })
-    .catch(err => alert('Error: ' + err));
+    .catch(err => {
+        alert('❌ Error: ' + err);
+    });
 }
 
 function disablePhishlet(name) {

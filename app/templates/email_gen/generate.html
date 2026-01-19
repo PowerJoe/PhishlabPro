@@ -1,128 +1,166 @@
 {% extends "base.html" %}
 
-{% block title %}Email Generator | PhishLab Pro{% endblock %}
+{% block title %}AI Email Generator | PhishLab Pro{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="margin-bottom: 2rem;">
-        <h1 class="glitch" data-text="EMAIL GENERATOR" style="font-size: 2.5rem;">EMAIL GENERATOR</h1>
-        <p style="color: var(--text-secondary);">Create phishing emails with AI or manually</p>
-    </div>
-    
-    <!-- Mode Selection -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
-        <div class="card {% if has_api_key %}card-success{% endif %}" style="text-align: center; padding: 2rem;">
-            <h3 style="color: var(--accent-green); margin-bottom: 1rem;">🤖 AI Generator</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                {% if has_api_key %}
-                Claude AI will generate realistic emails
-                {% else %}
-                Requires Anthropic API key
-                {% endif %}
-            </p>
-            {% if has_api_key %}
-            <span class="badge badge-success">Available</span>
-            {% else %}
-            <span class="badge badge-danger">API Key Required</span>
-            {% endif %}
+<div class="container">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="page-header">
+            <h1>EMAIL GENERATOR</h1>
+            <p class="subtitle">Create phishing emails with AI or manually</p>
         </div>
-        
-        <a href="{{ url_for('email_gen.manual') }}" class="card" style="text-align: center; padding: 2rem; text-decoration: none; cursor: pointer;">
-            <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">✍️ Manual Creator</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                Write your own custom emails
-            </p>
-            <span class="badge badge-success">Always Available</span>
-        </a>
-    </div>
-    
-    {% if has_api_key %}
-    <!-- AI Generation Form -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-        <div class="card">
-            <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">🤖 AI Generation</h2>
-            
-            <form method="POST" id="generateForm">
-                {{ form.hidden_tag() }}
-                
-                <div class="form-group">
-                    {{ form.target_name.label }}
-                    {{ form.target_name(class="form-control", placeholder="e.g., John Smith") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.company.label }}
-                    {{ form.company(class="form-control", placeholder="e.g., TechCorp Inc") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.job_title.label }}
-                    {{ form.job_title(class="form-control", placeholder="e.g., Senior Developer") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.scenario.label }}
-                    {{ form.scenario(class="form-control") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.custom_details.label }}
-                    {{ form.custom_details(class="form-control", rows="3", placeholder="Add specific details...") }}
-                </div>
-                
-                <button type="submit" class="btn btn-primary" id="generateBtn" style="width: 100%; padding: 1rem;">
-                    <span id="btnText">⚡ Generate Email</span>
-                    <span id="btnLoading" style="display: none;">
-                        <span class="loading"></span> Generating...
-                    </span>
-                </button>
-            </form>
-        </div>
-        
-        <div>
-            <div class="card card-success" style="margin-bottom: 1.5rem;">
-                <h3 style="color: var(--accent-green); margin-bottom: 1rem;">✨ How It Works</h3>
-                <ol style="color: var(--text-secondary); line-height: 1.8;">
-                    <li>Enter target information</li>
-                    <li>Select phishing scenario</li>
-                    <li>AI generates personalized email</li>
-                    <li>Preview and edit if needed</li>
-                    <li>Save as template</li>
-                </ol>
-            </div>
-            
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+            <!-- AI Generator Card -->
             <div class="card">
-                <h3 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ Scenarios</h3>
-                <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8;">
-                    <p><strong style="color: var(--accent-green);">🔒 IT Security:</strong> Security updates, MFA</p>
-                    <p><strong style="color: var(--accent-green);">👔 CEO Request:</strong> Urgent approvals</p>
-                    <p><strong style="color: var(--accent-green);">📋 HR Update:</strong> Policy changes</p>
-                    <p><strong style="color: var(--accent-green);">💰 Invoice:</strong> Payment requests</p>
+                <div style="text-align: center; padding: 20px;">
+                    <h3 style="color: var(--accent-green); margin-bottom: 1rem;">🤖 AI Generator</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Powered by Groq AI (Llama 3.3)
+                    </p>
+                    
+                    {% if has_api_key %}
+                        <span class="badge" style="background: var(--accent-green); padding: 8px 16px; border-radius: 4px; font-weight: 600;">
+                            ✓ READY TO USE
+                        </span>
+                    {% else %}
+                        <span class="badge" style="background: var(--accent-red); padding: 8px 16px; border-radius: 4px; font-weight: 600;">
+                            ⚠ API KEY REQUIRED
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Manual Creator Card -->
+            <div class="card">
+                <div style="text-align: center; padding: 20px;">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">✍️ Manual Creator</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Write your own custom emails
+                    </p>
+                    
+                    <span class="badge" style="background: var(--accent-green); padding: 8px 16px; border-radius: 4px; font-weight: 600;">
+                        ✓ ALWAYS AVAILABLE
+                    </span>
                 </div>
             </div>
         </div>
+
+        {% if has_api_key %}
+            <!-- AI Generation Form -->
+            <div class="card" style="margin-top: 30px;">
+                <h2 style="margin-bottom: 20px;">🤖 Generate with AI</h2>
+                
+                <form method="POST" action="{{ url_for('email_gen.generate') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Left Column -->
+                        <div>
+                            <div class="form-group">
+                                {{ form.scenario.label }}
+                                {{ form.scenario(class="form-control") }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.company.label }}
+                                {{ form.company(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div>
+                            <div class="form-group">
+                                {{ form.urgency.label }}
+                                {{ form.urgency(class="form-control") }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.tone.label }}
+                                {{ form.tone(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Full Width -->
+                    <div class="form-group">
+                        {{ form.custom_instructions.label }}
+                        {{ form.custom_instructions(class="form-control", rows=3) }}
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('email_gen.manual') }}" class="btn btn-secondary">✍️ Use Manual Creator</a>
+                    </div>
+                </form>
+            </div>
+        {% else %}
+            <!-- No API Key Warning -->
+            <div class="card" style="margin-top: 30px; text-align: center; padding: 40px;">
+                <h2 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ AI Generator Ready</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Powered by Groq AI - Fast and Free!
+                </p>
+                
+                <div style="background: var(--bg-secondary); padding: 20px; border-radius: 4px; margin-bottom: 2rem;">
+                    <p style="margin-bottom: 10px;">To enable AI generation:</p>
+                    <ol style="text-align: left; max-width: 500px; margin: 0 auto;">
+                        <li>Get free API key from <a href="https://console.groq.com" target="_blank">console.groq.com</a></li>
+                        <li>Add to <code>.env</code> file: <code>GROQ_API_KEY=your-key-here</code></li>
+                        <li>Restart the application</li>
+                    </ol>
+                </div>
+                
+                <a href="{{ url_for('email_gen.manual') }}" class="btn btn-primary" style="padding: 12px 30px;">
+                    ✍️ GO TO MANUAL CREATOR
+                </a>
+            </div>
+        {% endif %}
     </div>
-    
-    <script>
-    document.getElementById('generateForm').addEventListener('submit', function() {
-        const btnText = document.getElementById('btnText');
-        const btnLoading = document.getElementById('btnLoading');
-        btnText.style.display = 'none';
-        btnLoading.style.display = 'inline';
-    });
-    </script>
-    
-    {% else %}
-    <!-- No API Key Message -->
-    <div class="card" style="text-align: center; padding: 4rem 2rem;">
-        <h2 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ AI Generation Unavailable</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-            Anthropic API key not configured. Use the Manual Creator instead.
-        </p>
-        <a href="{{ url_for('email_gen.manual') }}" class="btn btn-primary">
-            ✍️ Go to Manual Creator
-        </a>
-    </div>
-    {% endif %}
 </div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-red);
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+textarea.form-control {
+    resize: vertical;
+    font-family: inherit;
+}
+
+code {
+    background: var(--bg-primary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent-red);
+    font-family: 'Courier New', monospace;
+}
+</style>
 {% endblock %}

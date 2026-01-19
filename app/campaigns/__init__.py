@@ -157,3 +157,47 @@ def launch(campaign_id):
     
     flash('Campaign launched! (Email sending not yet implemented)', 'success')
     return jsonify({'success': True})
+
+@campaigns_bp.route('/generate', methods=['GET', 'POST'])
+@login_required
+def generate_email():
+    """AI Email Generator page"""
+    from app.campaigns.ai_generator import generate_phishing_email
+    from datetime import datetime
+    
+    email = None
+    
+    if request.method == 'POST':
+        try:
+            # Get form data
+            scenario = request.form.get('scenario')
+            company = request.form.get('company')
+            urgency = request.form.get('urgency')
+            tone = request.form.get('tone')
+            custom = request.form.get('custom_instructions', '')
+            
+            # Generate email
+            result = generate_phishing_email(
+                scenario=scenario,
+                company=company,
+                urgency=urgency,
+                tone=tone,
+                custom=custom
+            )
+            
+            if result['success']:
+                email = {
+                    'subject': result['subject'],
+                    'body': result['body'],
+                    'model': result['model'],
+                    'provider': result['provider'],
+                    'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+                flash('Email generated successfully!', 'success')
+            else:
+                flash(f'Error generating email: {result["error"]}', 'danger')
+                
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'danger')
+    
+    return render_template('campaigns/generate.html', email=email, form=None)

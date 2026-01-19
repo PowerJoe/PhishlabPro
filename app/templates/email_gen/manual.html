@@ -3,90 +3,92 @@
 {% block title %}Manual Email Creator | PhishLab Pro{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="margin-bottom: 2rem;">
-        <h1 class="glitch" data-text="MANUAL EMAIL CREATOR" style="font-size: 2.5rem;">MANUAL EMAIL CREATOR</h1>
-        <p style="color: var(--text-secondary);">Create custom phishing emails from scratch</p>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-        <!-- Creation Form -->
-        <div class="card">
-            <h2 style="margin-bottom: 1.5rem; color: var(--accent-green);">✍️ Create Email</h2>
-            
-            <form method="POST">
+<div class="container">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="page-header">
+            <h1>✍️ MANUAL EMAIL CREATOR</h1>
+            <p class="subtitle">Write your own custom phishing emails</p>
+        </div>
+
+        <div class="card" style="margin-top: 30px;">
+            <form method="POST" action="{{ url_for('email_gen.manual') }}">
                 {{ form.hidden_tag() }}
                 
                 <div class="form-group">
-                    {{ form.name.label }}
-                    {{ form.name(class="form-control", placeholder="e.g., IT Security Alert - TechCorp") }}
-                </div>
-                
-                <div class="form-group">
                     {{ form.subject.label }}
-                    {{ form.subject(class="form-control", placeholder="e.g., [URGENT] Security Update Required") }}
+                    {{ form.subject(class="form-control", placeholder="e.g., Urgent: Password Reset Required") }}
                 </div>
-                
-                <div class="form-group">
-                    {{ form.preview.label }}
-                    {{ form.preview(class="form-control", placeholder="Short preview text (optional)") }}
-                </div>
-                
+
                 <div class="form-group">
                     {{ form.body.label }}
-                    {{ form.body(class="form-control", placeholder="Enter email body...\n\nUse [PHISHING_LINK] as placeholder for the phishing link.") }}
+                    {{ form.body(class="form-control", rows=15, placeholder="Write your email body here...
+
+Example:
+Dear User,
+
+We have detected unusual activity on your account. For security purposes, please verify your identity by clicking the link below:
+
+[Verify Account]
+
+If you did not request this, please ignore this email.
+
+Best regards,
+IT Security Team") }}
                 </div>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">
-                    💾 Save Template
-                </button>
+
+                <div style="display: flex; gap: 10px;">
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('email_gen.generate') }}" class="btn btn-secondary">🤖 Use AI Generator</a>
+                </div>
             </form>
         </div>
-        
-        <!-- Info & Examples -->
-        <div>
-            <div class="card card-success" style="margin-bottom: 1.5rem;">
-                <h3 style="color: var(--accent-green); margin-bottom: 1rem;">💡 Tips</h3>
-                <ul style="color: var(--text-secondary); line-height: 1.8;">
-                    <li>Use <code>[PHISHING_LINK]</code> as placeholder</li>
-                    <li>Personalize with target details</li>
-                    <li>Create sense of urgency</li>
-                    <li>Use professional tone</li>
-                    <li>Keep it concise (150-250 words)</li>
-                </ul>
-            </div>
-            
-            <div class="card">
-                <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">📝 Example Template</h3>
-                <div style="background: rgba(10, 14, 39, 0.6); padding: 1.5rem; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.6;">
-                    <strong style="color: var(--accent-green);">Subject:</strong><br>
-                    [URGENT] Security Update Required<br><br>
-                    
-                    <strong style="color: var(--accent-green);">Body:</strong><br>
-                    Hi [Name],<br><br>
-                    
-                    Our IT Security team has detected unusual login activity on your account. As part of our new security initiative, all employees must complete MFA enrollment by EOD today.<br><br>
-                    
-                    Click here to complete enrollment:<br>
-                    [PHISHING_LINK]<br><br>
-                    
-                    This is mandatory for compliance. Failure to complete may result in account suspension.<br><br>
-                    
-                    Thanks,<br>
-                    IT Security Team
-                </div>
-            </div>
-            
-            <div class="card" style="margin-top: 1.5rem; background: rgba(255, 0, 85, 0.05);">
-                <h3 style="color: var(--accent-red); margin-bottom: 1rem;">⚠️ Common Scenarios</h3>
-                <div style="color: var(--text-secondary); font-size: 0.9rem;">
-                    <p><strong>IT Alert:</strong> Security updates, MFA requirements</p>
-                    <p><strong>CEO Request:</strong> Urgent approvals, wire transfers</p>
-                    <p><strong>HR Update:</strong> Policy changes, benefits</p>
-                    <p><strong>Vendor:</strong> Invoice requests, payment updates</p>
-                </div>
-            </div>
+
+        <!-- Tips Card -->
+        <div class="card" style="margin-top: 20px; background: var(--bg-secondary);">
+            <h3 style="margin-bottom: 15px;">💡 Tips for Realistic Phishing Emails</h3>
+            <ul style="color: var(--text-secondary); line-height: 1.8;">
+                <li>Use professional language and proper grammar</li>
+                <li>Include urgency or time pressure</li>
+                <li>Impersonate trusted brands or internal departments</li>
+                <li>Add call-to-action buttons or links</li>
+                <li>Include realistic email signatures</li>
+                <li>Use social engineering tactics (authority, urgency, fear)</li>
+            </ul>
         </div>
     </div>
 </div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-red);
+}
+
+textarea.form-control {
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.6;
+}
+</style>
 {% endblock %}
